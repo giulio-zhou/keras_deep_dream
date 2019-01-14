@@ -122,7 +122,7 @@ class MultipleExamples:
     def __len__(self):
         return len(self.data)
     def make_config(self, idx, config):
-        config[DATA] = self.data[idx]
+        config[DATA] = [self.data[idx]]
         return config
 
 # These contain gradient sources.
@@ -187,11 +187,13 @@ def viz_cnn(model_path, dataset_name):
     config = default_config
     config[DATA], config[DIMS] = [data[0]], dataset.dims
     config[NUM_ITERS] = 20
-    feature = AllSpatialColumns(model, 7)
-    runner = SingleFeature(model, feature, config)
-    # feature = AllChannels(model, 1)
+    # feature = AllSpatialColumns(model, 7)
+    # runner = SingleFeature(model, feature, config)
+    config[LR] = 2e-2
+    feature = AllChannels(model, 7)
     # feature2 = LearningRates([1e-3, 2e-3, 5e-3, 1e-2, 2e-2, 5e-2, 1e-1, 2e-1])
-    # runner = DoubleFeature(model, [feature, feature2], config)
+    feature2 = MultipleExamples(data)
+    runner = DoubleFeature(model, [feature, feature2], config)
     skio.imsave('%s_cnn.png' % dataset_name, runner.output)
 
 if __name__ == '__main__':
